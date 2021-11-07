@@ -16,5 +16,5 @@ Este directorio contiene todo el código de base que se entrega para el funciona
 -Test
 Este directorio contiene las pruebas realizadas a los TADs, Estructuras de Datos y Algoritmos.
 
+Req 2 - Daniela Espinosa - d.espinosaa - 202022615
 Req 3 - Tomás la Rotta - t.la -202021354
-Req 4 - Daniela Espinosa - d.espinosaa - 202022615
