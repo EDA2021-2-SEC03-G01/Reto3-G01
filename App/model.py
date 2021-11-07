@@ -30,7 +30,7 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
 from DISClib.DataStructures import mapentry as me
-from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import mergesort as ms
 import datetime
 assert cf
 
@@ -57,13 +57,16 @@ def newAnalyzer():
     analyzer['dateIndex'] = om.newMap(omaptype='BST',
                                       comparefunction=compareDates)
     analyzer['ciudades'] = om.newMap(omaptype='BST',
-                                    comparefunction=None)
+                                    comparefunction=compareDates)
+    analyzer['duraciones'] = om.newMap(omaptype='BST',
+                                    comparefunction=compareDates)
     return analyzer
 # Funciones para agregar informacion al catalogo
 def addEvent(analyzer, event):
     lt.addLast(analyzer['events'], event)
     updateDateIndex(analyzer['dateIndex'], event)
-    updateCiudades(analyzer["ciudades"],event)
+    updateCiudades(analyzer["ciudades"], event)
+    updateDuraciones(analyzer["duraciones"], event)
     return analyzer
 
 def updateDateIndex(map, event):
@@ -84,6 +87,17 @@ def updateCiudades(map, event):
     if entry is None:
         datentry = newDataEntry(event)
         om.put(map, city, datentry)
+    else:
+        datentry = me.getValue(entry)
+    add(datentry, event)
+    return map
+
+def updateDuraciones(map, event):
+    duracion = event['duration (seconds)']
+    entry = om.get(map, duracion)
+    if entry is None:
+        datentry = newDataEntry(event)
+        om.put(map, duracion, datentry)
     else:
         datentry = me.getValue(entry)
     add(datentry, event)
@@ -128,3 +142,130 @@ def compareDates(date1, date2):
         return 1
     else:
         return -1
+
+def compareDates1(av1, av2):
+    """
+    Compara dos fechas
+    """    
+    date1 = datetime.datetime.strptime(av1["date"], '%Y-%m-%d %H:%M:%S')
+    date2 = datetime.datetime.strptime(av2["date"], '%Y-%m-%d %H:%M:%S')
+    if (date1 <= date2):
+        return True
+    else:
+        return False
+
+def compareDuracion(av1, av2):
+    """
+    Compara dos fechas
+    """    
+    duration1 = float(av1["duration"])
+    duration2 = float(av2["duration"])
+    if (duration1 < duration2):
+        return True
+    elif duration1 == duration2:
+        return compareCities(av1, av2)
+    else:
+        return False
+
+def compareCities(av1, av2):
+    """
+    Compara dos fechas
+    """    
+    city1 = av1["city"]
+    city2 = av2["city"]
+    if (city1 <= city2):
+        return True
+    else:
+        return False
+
+#primeros y ultimos n
+def f_primeros_ultimos(lista, n):
+    c = 0
+    len = lt.size(lista)
+    lista_def = lt.newList(datastructure="ARRAYLIST")
+    for e in lt.iterator(lista):
+        lt.addLast(lista_def, e)
+        c += 1
+        if c == n:
+            c -= 1
+            break
+    while c >= 0:
+        e = lt.getElement(lista, len-c)
+        lt.addLast(lista_def, e)
+        c -= 1
+    return lista_def
+
+#Requerimientos
+
+#Req 1
+def avistamientos_ciudad(analyzer, ciudad):
+    arbol_ciudades = analyzer["ciudades"]
+    ciudades = om.keySet(arbol_ciudades)
+    tot_ciudades = lt.size(ciudades)
+    avs_ciudad = om.get(arbol_ciudades, ciudad)["value"]
+    lista_avs = lt.newList(datastructure="ARRAY_LIST", cmpfunction=compareDates1)
+    for av in lt.iterator(avs_ciudad):
+        dic_av = {"date":av["datetime"], "city":av["city"], "state":av["state"], "country":av["country"], "shape":av["shape"], "duration":av["duration (seconds)"]}
+        lt.addLast(lista_avs, dic_av)
+    #Total avistamientos ciudad
+    tot_avs = lt.size(lista_avs)
+    #Ordenar por fecha
+    lista_avs = ms.sort(lista_avs, compareDates1)
+    #Primeros y últimos tres
+    lista_def = f_primeros_ultimos(lista_avs, 3)
+    return tot_ciudades, lista_def, tot_avs
+
+#Req 2 - Daniela
+def avistamientos_duracion(analyzer, min, max):
+    arbol_duraciones = analyzer["duraciones"]
+    duraciones = om.keySet(arbol_duraciones)
+    #maxima duracion registrada
+    max_duracion = 0
+    for d in lt.iterator(duraciones):
+        if float(d) > max_duracion:
+            max_duracion = float(d)
+    #numero de avistamientos con la duracion maxima
+    max_count = lt.size(om.get(arbol_duraciones, str(max_duracion))["value"])
+    #total duraciones diferentes
+    tot_duraciones = lt.size(duraciones)
+    lista_avs = lt.newList(datastructure="ARRAY_LIST", cmpfunction=compareDuracion)
+    for d in lt.iterator(duraciones):
+        if float(d) >= min and float(d) <= max:
+            avs_duracion = om.get(arbol_duraciones, d)["value"]
+            for av in lt.iterator(avs_duracion):
+                dic_av = {"date":av["datetime"], "city":av["city"], "state":av["state"], "country":av["country"], "shape":av["shape"], "duration":av["duration (seconds)"]}
+                lt.addLast(lista_avs, dic_av)
+    #Total avistamientos en el rango de duraciones
+    total_avs = lt.size(lista_avs)
+    #Ordenar por duracion y ciudades
+    lista_avs = ms.sort(lista_avs, compareDuracion)
+    #Primeros y últimos tres
+    lista_def = f_primeros_ultimos(lista_avs, 3)
+    return tot_duraciones, max_duracion, max_count, total_avs, lista_def
+
+#req 3 - Tomas
+
+#req 4
+def avistamientos_fecha(analyzer, min, max):
+    arbol_fechas = analyzer['dateIndex']
+    fechas = om.keySet(arbol_fechas)
+    min_fecha = lt.getElement(fechas, 1)
+    min_count = lt.size(om.get(arbol_fechas, min_fecha)["value"])
+    tot_fechas = lt.size(fechas)
+    lista_avs = lt.newList(datastructure="ARRAY_LIST", cmpfunction=compareDuracion)
+    for f in lt.iterator(fechas):
+        f = datetime.datetime.strptime(str(f), "%Y-%m-%d").date()
+        min = datetime.datetime.strptime(str(min), "%Y-%m-%d").date()
+        max = datetime.datetime.strptime(str(max), "%Y-%m-%d").date()
+        if (f) >= min and (f) <= max:
+            avs_fecha = om.get(arbol_fechas, f)["value"]
+            for av in lt.iterator(avs_fecha):
+                dic_av = {"date":av["datetime"], "city":av["city"], "state":av["state"], "country":av["country"], "shape":av["shape"], "duration":av["duration (seconds)"]}
+                lt.addLast(lista_avs, dic_av)
+    #Total avistamientos en el rango de duraciones
+    total_avs = lt.size(lista_avs)
+    #Primeros y últimos tres
+    lista_def = f_primeros_ultimos(lista_avs, 3)
+    return min_fecha, min_count, tot_fechas, total_avs, lista_def
+
+#Req 5

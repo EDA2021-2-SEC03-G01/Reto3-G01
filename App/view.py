@@ -20,6 +20,7 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+from datetime import datetime
 import config as cf
 import sys
 import controller
@@ -33,11 +34,11 @@ Presenta el menu de opciones y por cada seleccion
 se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
-ufos = 'UFOS/UFOS-utf8-large.csv'
+ufos = 'UFOS/UFOS-utf8-small.csv'
 cont = None
 
 def printMenu():
-    print("Bienvenido")
+    print("\nBienvenido")
     print("1- Crear el catálogo")
     print("2- Cargar datos")
     print("3- Contar los avistamientos en una ciudad")
@@ -65,6 +66,38 @@ while True:
         print('Altura del arbol: ' + str(controller.indexHeight(cont)))
         print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
 
+    elif int(inputs[0]) == 3:
+        ciudad = input("\nIngrese la ciudad de interés: ")
+        tot, lista_avs, tot_avs = controller.avistamientos_ciudad(cont, ciudad)
+        print("\nHay " + str(tot) + " ciudades donde han habido avistamientos reportados.")
+        print("\nEn " + ciudad + " se han reportado " + str(tot_avs) + " avistamientos.")
+        print("\nA continuación se muestran los primeros y últimos 3:")
+        for av in lt.iterator(lista_avs):
+            print(av)
+
+    elif int(inputs[0]) == 4:
+        min = float(input("\nIngrese la duración mínima: "))
+        max = float(input("Ingrese la duración máxima: "))
+        tot_duraciones, max_duracion, max_count, total_avs, lista_avs = controller.avistamientos_duracion(cont, min, max)
+        print("\nSe registraron " + str(tot_duraciones) + " duraciones direfentes.")
+        print("\nLa duración máxima registrada es de " + str(max_duracion) + " segundos y hay " + str(max_count) + " avistamiento(s) con esa duración.")
+        print("\nHubo " + str(total_avs) + " avistamientos con duraciones entre " + str(min) + " y " + str(max) + " segundos.")
+        print("\nA continuación se muestran los primeros y últimos 3:")
+        for av in lt.iterator(lista_avs):
+            print(av)
+
+    elif int(inputs[0]) == 5:
+        min = input("\nIngrese la fecha (AAAA-MM-DD) mínima: ")
+        max = input("Ingrese la fecha (AAAA-MM-DD) máxima: ")
+        min_fecha, min_count, tot_fechas, total_avs, lista_avs = controller.avistamientos_fecha(cont, min, max)
+        print(min_fecha)
+        print("\nSe registraron avistamientos en " + str(tot_fechas) + " fechas direfentes.")
+        print("\nLa fecha más antigua registrada es " + str(min_fecha) + " y hay " + str(min_count) + " avistamiento(s) en esa fecha.")
+        print("\nHubo " + str(total_avs) + " avistamientos entre " + str(min) + " y " + str(max))
+        print("\nA continuación se muestran los primeros y últimos 3:")
+        for av in lt.iterator(lista_avs):
+            print(av)
+        
     else:
         sys.exit(0)
 sys.exit(0)

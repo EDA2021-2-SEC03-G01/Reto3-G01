@@ -59,3 +59,25 @@ def indexSize(analyzer):
     Numero de nodos en el arbol
     """
     return model.indexSize(analyzer)
+
+#Requerimientos
+
+#Req 1
+def avistamientos_ciudad(analyzer, ciudad):
+    tot, lista_avs, tot_avs = model.avistamientos_ciudad(analyzer, ciudad)
+    return tot, lista_avs, tot_avs
+
+#Req 2
+def avistamientos_duracion(analyzer, min, max):
+    tot_duraciones, max_duracion, max_count, total_avs, lista_avs = model.avistamientos_duracion(analyzer, min, max)
+    return tot_duraciones, max_duracion, max_count, total_avs, lista_avs
+
+#Req 3
+
+
+#Req 4
+def avistamientos_fecha(analyzer, min, max):
+    min_fecha, min_count, tot_fechas, total_avs, lista_avs = model.avistamientos_fecha(analyzer, min, max)
+    return min_fecha, min_count, tot_fechas, total_avs, lista_avs
+
+#Req 5
