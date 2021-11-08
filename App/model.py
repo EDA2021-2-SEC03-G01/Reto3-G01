@@ -60,6 +60,8 @@ def newAnalyzer():
                                     comparefunction=compareDates)
     analyzer['duraciones'] = om.newMap(omaptype='BST',
                                     comparefunction=compareDates)
+    analyzer["horas"] = om.newMap(omaptype='BST',
+                                    comparefunction=compareHoras)
     analyzer['longitudes'] = om.newMap(omaptype='BST',
                                     comparefunction=compareDates)
     return analyzer
@@ -70,6 +72,7 @@ def addEvent(analyzer, event):
     updateDateIndex(analyzer['dateIndex'], event)
     updateCiudades(analyzer["ciudades"], event)
     updateDuraciones(analyzer["duraciones"], event)
+    updateHoras(analyzer["horas"], event)
     updateLongitudes(analyzer["longitudes"], event)
     return analyzer
 
@@ -105,6 +108,18 @@ def updateDuraciones(map, event):
     else:
         datentry = me.getValue(entry)
     add(datentry, event)
+    return map
+
+def updateHoras(map, event):
+    hora = event["datetime"]
+    hora = hora.split(" ")[1]
+    entry = om.get(map, hora)
+    if entry is None:
+        dataentry = newDataEntry(event)
+        om.put(map, hora, dataentry)
+    else:
+        dataentry = me.getValue(entry)
+    add(dataentry, event)
     return map
 
 def updateLongitudes(map, event):
@@ -194,6 +209,23 @@ def compareCities(av1, av2):
     else:
         return False
 
+def compareHoras(hora1, hora2):
+    """
+    Compara dos Horas
+    """
+    if " " in hora1:
+        hora1=hora1.split(" ")[1]
+    if " " in hora2:
+        hora2=hora2.split(" ")[1]
+    hora1 = datetime.datetime.strptime(str(hora1), '%H:%M:%S')
+    hora2 = datetime.datetime.strptime(str(hora2), '%H:%M:%S')
+    if hora1 > hora2:
+        return 1
+    elif hora1 == hora2:
+        return 0
+    else:
+        return -1
+
 def compareLatitudes(av1, av2):
     """
     Compara dos fechas
@@ -271,6 +303,27 @@ def avistamientos_duracion(analyzer, min, max):
     return tot_duraciones, max_duracion, max_count, total_avs, lista_def
 
 #req 3 - Tomas
+def avistamientos_hora(analyzer, hora_in, hora_fin):
+    arbol_horas = analyzer["horas"]
+    horas = om.keySet(arbol_horas)
+    max_hora = lt.getElement(horas, lt.size(horas))
+    max_count = lt.size(om.get(arbol_horas, max_hora)["value"])
+    tot_horas = lt.size(horas)
+    lista_avs = lt.newList(datastructure="ARRAY_LIST", cmpfunction=None)
+    hora_in = datetime.datetime.strptime(str(hora_in), "%H:%M:%S")
+    hora_fin = datetime.datetime.strptime(str(hora_fin), "%H:%M:%S")
+    for h in lt.iterator(horas):
+        h = datetime.datetime.strptime(str(h), "%H:%M:%S")
+        if h >= hora_in and h <= hora_fin:
+            avs_hora = om.get(arbol_horas, str(h))["value"]
+            for av in lt.iterator(avs_hora):
+                dic_av = {"date":av["datetime"], "city":av["city"], "state":av["state"], "country":av["country"], "shape":av["shape"], "duration":av["duration (seconds)"]}
+                lt.addLast(lista_avs, dic_av)
+    #Total avistamientos en el rango de horas
+    total_avs = lt.size(lista_avs)
+    #Primeros y últimos tres
+    lista_def = f_primeros_ultimos(lista_avs, 3)
+    return max_hora, max_count, tot_horas, total_avs, lista_def  
 
 #req 4
 def avistamientos_fecha(analyzer, min, max):

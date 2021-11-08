@@ -73,7 +73,9 @@ def avistamientos_duracion(analyzer, min, max):
     return tot_duraciones, max_duracion, max_count, total_avs, lista_avs
 
 #Req 3
-
+def avistamientos_hora(analyzer, hora_in, hora_fin):
+    max_hora, max_count, tot_horas, total_avs, lista_def = model.avistamientos_hora(analyzer, hora_in, hora_fin)
+    return max_hora, max_count, tot_horas, total_avs, lista_def
 
 #Req 4
 def avistamientos_fecha(analyzer, min, max):
