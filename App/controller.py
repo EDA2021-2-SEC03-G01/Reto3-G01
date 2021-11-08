@@ -81,3 +81,6 @@ def avistamientos_fecha(analyzer, min, max):
     return min_fecha, min_count, tot_fechas, total_avs, lista_avs
 
 #Req 5
+def avistamientos_long_lat(analyzer, minLong, maxLong, minLat, maxLat):
+    total_avs, lista_avs = model.avistamientos_long_lat(analyzer, minLong, maxLong, minLat, maxLat)
+    return total_avs, lista_avs

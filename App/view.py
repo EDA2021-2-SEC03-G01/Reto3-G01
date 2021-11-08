@@ -87,17 +87,30 @@ while True:
             print(av)
 
     elif int(inputs[0]) == 5:
+        print()
+
+    elif int(inputs[0]) == 6:
         min = input("\nIngrese la fecha (AAAA-MM-DD) mínima: ")
         max = input("Ingrese la fecha (AAAA-MM-DD) máxima: ")
         min_fecha, min_count, tot_fechas, total_avs, lista_avs = controller.avistamientos_fecha(cont, min, max)
-        print(min_fecha)
         print("\nSe registraron avistamientos en " + str(tot_fechas) + " fechas direfentes.")
         print("\nLa fecha más antigua registrada es " + str(min_fecha) + " y hay " + str(min_count) + " avistamiento(s) en esa fecha.")
         print("\nHubo " + str(total_avs) + " avistamientos entre " + str(min) + " y " + str(max))
         print("\nA continuación se muestran los primeros y últimos 3:")
         for av in lt.iterator(lista_avs):
             print(av)
-        
+    
+    elif int(inputs[0]) == 7:
+        minLong = float(input("\nIngrese la longitud mínima: "))
+        maxLong = float(input("Ingrese la longitud máxima: "))
+        minLat = float(input("\nIngrese la latitud mínima: "))
+        maxLat = float(input("Ingrese la latitud máxima: "))
+        total_avs, lista_avs = controller.avistamientos_long_lat(cont, minLong, maxLong, minLat, maxLat)
+        print("\nSe registraron " + str(total_avs) + " avistamientos dentro del área definida. ")
+        print("\nA continuación se muestran los primeros y últimos 5:")
+        for av in lt.iterator(lista_avs):
+            print(av)
+
     else:
         sys.exit(0)
 sys.exit(0)

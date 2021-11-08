@@ -60,13 +60,17 @@ def newAnalyzer():
                                     comparefunction=compareDates)
     analyzer['duraciones'] = om.newMap(omaptype='BST',
                                     comparefunction=compareDates)
+    analyzer['longitudes'] = om.newMap(omaptype='BST',
+                                    comparefunction=compareDates)
     return analyzer
+
 # Funciones para agregar informacion al catalogo
 def addEvent(analyzer, event):
     lt.addLast(analyzer['events'], event)
     updateDateIndex(analyzer['dateIndex'], event)
     updateCiudades(analyzer["ciudades"], event)
     updateDuraciones(analyzer["duraciones"], event)
+    updateLongitudes(analyzer["longitudes"], event)
     return analyzer
 
 def updateDateIndex(map, event):
@@ -103,6 +107,17 @@ def updateDuraciones(map, event):
     add(datentry, event)
     return map
 
+def updateLongitudes(map, event):
+    longitude = event['longitude']
+    entry = om.get(map, longitude)
+    if entry is None:
+        datentry = newDataEntry(event)
+        om.put(map, longitude, datentry)
+    else:
+        datentry = me.getValue(entry)
+    add(datentry, event)
+    return map
+
 def add(datentry, event):
     lt.addLast(datentry, event)
     return datentry
@@ -114,6 +129,7 @@ def newDataEntry(event):
     """
     entry=lt.newList(datastructure="ARRAY_LIST")
     return entry
+
 # Funciones para creacion de datos
 
 # Funciones de consulta
@@ -123,12 +139,12 @@ def indexHeight(analyzer):
     """
     return om.height(analyzer['dateIndex'])
 
-
 def indexSize(analyzer):
     """
     Numero de elementos en el indice
     """
     return om.size(analyzer['dateIndex'])
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
@@ -174,6 +190,17 @@ def compareCities(av1, av2):
     city1 = av1["city"]
     city2 = av2["city"]
     if (city1 <= city2):
+        return True
+    else:
+        return False
+
+def compareLatitudes(av1, av2):
+    """
+    Compara dos fechas
+    """    
+    lat1 = av1["latitude"]
+    lat2 = av2["latitude"]
+    if (lat1 <= lat2):
         return True
     else:
         return False
@@ -269,3 +296,29 @@ def avistamientos_fecha(analyzer, min, max):
     return min_fecha, min_count, tot_fechas, total_avs, lista_def
 
 #Req 5
+def avistamientos_long_lat(analyzer, minLong, maxLong, minLat, maxLat):
+    arbol_long = analyzer['longitudes']
+    longitudes = om.keySet(arbol_long)
+    lista_avs = lt.newList(datastructure="ARRAY_LIST", cmpfunction=compareDuracion)
+    for long in lt.iterator(longitudes):
+        if round(float(long), 2) >= minLong and round(float(long), 2) <= maxLong:
+            avs_long= om.get(arbol_long, long)["value"]
+            for av in lt.iterator(avs_long):
+                lat = round(float(av["latitude"]),2)
+                if lat >= minLat and lat <= maxLat:
+                    dic_av = {"date":av["datetime"], "city":av["city"], "state":av["state"], "country":av["country"], "shape":av["shape"], 
+                            "duration":av["duration (seconds)"], "latitude":round(lat, 2), "longitude":round(float(long), 2)}
+                    lt.addLast(lista_avs, dic_av)
+    #Total avistamientos en el rango de duraciones
+    total_avs = lt.size(lista_avs)
+    #Ordenar por latitud y longitud
+    lista_avs = ms.sort(lista_avs, compareLatitudes)
+    #Primeros y últimos tres
+    if total_avs > 10:
+        lista_avs = f_primeros_ultimos(lista_avs, 5)
+    return total_avs, lista_avs
+
+#BONO
+def avistamientos_zona(analyzer, minLong, maxLong, minLat, maxLat):
+    
+    return
