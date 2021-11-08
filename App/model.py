@@ -31,6 +31,7 @@ from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import mergesort as ms
+from DISClib.Algorithms.Sorting import insertionsort as ins
 import datetime
 assert cf
 
@@ -185,6 +186,17 @@ def compareDates1(av1, av2):
     else:
         return False
 
+def compareDates2(av1, av2):
+    """
+    Compara dos fechas
+    """    
+    date1 = datetime.datetime.strptime(av1["date"], '%Y-%m-%d %H:%M:%S')
+    date2 = datetime.datetime.strptime(av2["date"], '%Y-%m-%d %H:%M:%S')
+    if (date1 >= date2):
+        return True
+    else:
+        return False
+
 def compareDuracion(av1, av2):
     """
     Compara dos fechas
@@ -226,9 +238,16 @@ def compareHoras(hora1, hora2):
     else:
         return -1
 
+def compareHoras1(av1, av2):
+    hora1 = datetime.datetime.strptime(av1["hour"], '%H:%M:%S')
+    hora2 = datetime.datetime.strptime(av2["hour"], '%H:%M:%S')
+    if (hora1 <= hora2):
+        return True
+    else:
+        return False
 def compareLatitudes(av1, av2):
     """
-    Compara dos fechas
+    Compara dos latitudes
     """    
     lat1 = av1["latitude"]
     lat2 = av2["latitude"]
@@ -317,8 +336,11 @@ def avistamientos_hora(analyzer, hora_in, hora_fin):
         if h >= hora_in and h <= hora_fin:
             avs_hora = om.get(arbol_horas, str(h))["value"]
             for av in lt.iterator(avs_hora):
-                dic_av = {"date":av["datetime"], "city":av["city"], "state":av["state"], "country":av["country"], "shape":av["shape"], "duration":av["duration (seconds)"]}
+                dic_av = {"date":av["datetime"], "hour":str(h).split(" ")[1], "city":av["city"], "state":av["state"], "country":av["country"], "shape":av["shape"], "duration":av["duration (seconds)"]}
                 lt.addLast(lista_avs, dic_av)
+    #Ordenamiento 
+    lista_avs=ins.sort(lista_avs, compareDates2)
+    lista_avs=ins.sort(lista_avs, compareHoras1)
     #Total avistamientos en el rango de horas
     total_avs = lt.size(lista_avs)
     #Primeros y últimos tres

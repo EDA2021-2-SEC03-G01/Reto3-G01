@@ -93,7 +93,7 @@ while True:
         print("\nSe registraron avistamientos en " + str(tot_horas) + " horas diferentes")
         print("\nEl avistamiento más tardio registrado es " + str(max_hora) + " y hay " + str(max_count) + " avistamientos a esa hora")
         print("\nHubo " + str(total_avs) + " avistamientos entre las horas consultadas")
-        print("\nA continuacione se muestran los primeros y ultimos 3 avistamientos en este rango:")
+        print("\nA continuacion se muestran los primeros y ultimos 3 avistamientos en este rango:")
         for av in lt.iterator(lista_def):
             print(av)
 
