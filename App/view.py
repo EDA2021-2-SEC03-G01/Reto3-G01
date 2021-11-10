@@ -21,9 +21,11 @@
  """
 
 from datetime import datetime
+from os import startfile
 import config as cf
 import sys
 import controller
+import folium
 from DISClib.ADT import list as lt
 assert cf
 
@@ -113,12 +115,21 @@ while True:
         maxLong = float(input("Ingrese la longitud máxima: "))
         minLat = float(input("\nIngrese la latitud mínima: "))
         maxLat = float(input("Ingrese la latitud máxima: "))
-        total_avs, lista_avs = controller.avistamientos_long_lat(cont, minLong, maxLong, minLat, maxLat)
+        total_avs, lista_avs, lista_avs2 = controller.avistamientos_long_lat(cont, minLong, maxLong, minLat, maxLat)
         print("\nSe registraron " + str(total_avs) + " avistamientos dentro del área definida. ")
         print("\nA continuación se muestran los primeros y últimos 5:")
-        for av in lt.iterator(lista_avs):
+        for av in lt.iterator(lista_avs2):
             print(av)
 
+    elif int(inputs[0]) == 8:
+        minLong = float(input("\nIngrese la longitud mínima: "))
+        maxLong = float(input("Ingrese la longitud máxima: "))
+        minLat = float(input("\nIngrese la latitud mínima: "))
+        maxLat = float(input("Ingrese la latitud máxima: "))
+        map = controller.avistamientos_zona(cont, minLong, maxLong, minLat, maxLat)
+        startfile("mapa.html")
+        
     else:
         sys.exit(0)
+
 sys.exit(0)
