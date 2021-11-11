@@ -116,10 +116,10 @@ while True:
         maxLong = float(input("Ingrese la longitud máxima: "))
         minLat = float(input("\nIngrese la latitud mínima: "))
         maxLat = float(input("Ingrese la latitud máxima: "))
-        total_avs, lista_avs2, lista_avs = controller.avistamientos_long_lat(cont, minLong, maxLong, minLat, maxLat)
+        total_avs, lista_avs = controller.avistamientos_long_lat(cont, minLong, maxLong, minLat, maxLat)
         print("\nSe registraron " + str(total_avs) + " avistamientos dentro del área definida. ")
         print("\nA continuación se muestran los primeros y últimos 5:")
-        for av in lt.iterator(lista_avs2):
+        for av in lt.iterator(lista_avs):
             print(av)
 
     elif int(inputs[0]) == 8:
