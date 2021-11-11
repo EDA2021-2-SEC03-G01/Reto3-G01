@@ -390,20 +390,19 @@ def avistamientos_long_lat(analyzer, minLong, maxLong, minLat, maxLat):
     #Ordenar por latitud y longitud
     lista_avs = ms.sort(lista_avs, compareLatitudes)
     #Primeros y últimos tres
-    lista_avs2 = lt.newList(datastructure="ARRAY_LIST")
     if total_avs > 10:
-        lista_avs2 = f_primeros_ultimos(lista_avs, 5)
-    return total_avs, lista_avs2, lista_avs
+        lista_avs = f_primeros_ultimos(lista_avs, 5)
+        return total_avs, lista_avs
+    return total_avs, lista_avs
 
 #BONO
 def avistamientos_zona(analyzer, minLong, maxLong, minLat, maxLat):
     latitude = (minLat + maxLat)/2
     longitude = (minLong + maxLong)/2
     map = folium.Map(location=[latitude, longitude], zoom_start=6, control_scale=True)
-    total_avs, lista_avs2, lista_avs = avistamientos_long_lat(analyzer, minLong, maxLong, minLat, maxLat)
+    total_avs, lista_avs = avistamientos_long_lat(analyzer, minLong, maxLong, minLat, maxLat)
     for av in lt.iterator(lista_avs):
-        info = "City: " + av["city"] + ", Datetime: " + av["date"] + ", Duration: " + av["duration"] + ", Shape: " + av["shape"]
+        info = "City: " + av["city"] + " Datetime: " + av["date"] + " Duration: " + av["duration"] + " Shape: " + av["shape"]
         folium.Marker([av["latitude"], av["longitude"]], popup=info, ).add_to(map)
     map.save("mapa.html")
-    return map
-    
+    return total_avs, lista_avs, map
