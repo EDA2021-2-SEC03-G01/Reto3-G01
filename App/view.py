@@ -64,6 +64,7 @@ while True:
         cont = controller.init()
         
     elif int(inputs[0]) == 2:
+        print("\nCargando...\n")
         controller.loadData(cont, ufos)
         print('Altura del arbol: ' + str(controller.indexHeight(cont)))
         print('Elementos en el arbol: ' + str(controller.indexSize(cont)))

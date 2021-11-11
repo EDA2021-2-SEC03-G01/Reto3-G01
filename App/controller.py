@@ -38,11 +38,18 @@ def loadData(analyzer, UFOS):
     """
     Carga los datos de los archivos CSV en el modelo
     """
+    i=0
+    if UFOS == 'UFOS/UFOS-utf8-small.csv':
+        t=803
+    else:
+        t=80332
     UFOS = cf.data_dir + UFOS
     input_file = csv.DictReader(open(UFOS, encoding="utf-8"),
                                 delimiter=",")
     for crime in input_file:
         model.addEvent(analyzer, crime)
+        print(f"{i}/{t}", end='\r')
+        i+=1
     return analyzer
 # Funciones de ordenamiento
 
